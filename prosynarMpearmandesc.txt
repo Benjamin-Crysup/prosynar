@@ -1,0 +1,2 @@
+A merge method for prosynar.
+Mpear uses the method of PEAR (Zhang, Kobert, Flouri and Stamatakis, 2014) to merge sequences.

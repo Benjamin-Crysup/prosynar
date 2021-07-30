@@ -1,0 +1,2 @@
+A merge method for prosynar.
+Malign will align two sequences and merge the alignmed bases.

@@ -1,0 +1,3 @@
+A filter for prosynar.
+Fprover will remove pairs where the overlap (in reference space) is too small.
+This will make this decision in a probabilistic manner (comparing alignment probabilities when there is sufficient overlap to those when there isn't).

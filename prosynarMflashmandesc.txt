@@ -1,0 +1,2 @@
+A merge method for prosynar.
+Mflash uses the method of FLASH (Magoc and Salzberg, 2011) to merge sequences.

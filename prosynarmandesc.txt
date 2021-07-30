@@ -1,0 +1,3 @@
+PROmoting SYNthetic hARmony takes a SAM file (either in a file or through stdin) and looks for any paired entries.
+It will then pass those entries through some filters (that you elect), and then use a merge algorithm (again, you pick) to merge the pairs that pass the filters.
+Note that any supplemental/secondary alignments will be discarded.

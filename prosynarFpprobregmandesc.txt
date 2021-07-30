@@ -1,0 +1,3 @@
+A filter for prosynar.
+Fpprobreg will remove pairs where the overlapping region is entirely contained in a repetitive region.
+This will make this decision in a probabilistic manner (taking any stubs that extend past a repetitive region and determining how likely they came from the possible source regions).
