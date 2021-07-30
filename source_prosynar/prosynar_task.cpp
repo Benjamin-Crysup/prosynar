@@ -19,6 +19,12 @@ ProsynarArgumentParser::ProsynarArgumentParser(){
 	failDumpT = 0;
 	failDumpB = 0;
 	seqOutFile = 0;
+	mergeSamOutFile = 0;
+	refFile = 0;
+	probFile = 0;
+	costFile = 0;
+	qualmFile = 0;
+	failDumpFile = 0;
 	defProbRegMap = 0;
 	defAllRegCosts = 0;
 	defAllQualMangs = 0;

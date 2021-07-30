@@ -241,7 +241,8 @@ try{
 		std::vector<MergeThreadArgs> workThrArgs; workThrArgs.resize(argsP.numThread);
 		std::vector<void*> liveThread;
 		for(intptr_t i = 0; i<argsP.numThread; i++){
-			workThrArgs[i] = {(int)i, &argsP, &taskPCC, &entCache, &failPCC, &goodPCC};
+			MergeThreadArgs newArg = {(int)i, &argsP, &taskPCC, &entCache, &failPCC, &goodPCC};
+			workThrArgs[i] = newArg;
 			liveThread.push_back(startThread(attemptMerging, &(workThrArgs[i])));
 		}
 	//start the good output thread
@@ -252,7 +253,8 @@ try{
 		OutputFailedThreadArgs failThrArg;
 		void* failThr = 0;
 		if(failDumpB){
-			failThrArg = {failDumpB, &argsP, &entCache, &failPCC};
+			OutputFailedThreadArgs newFTArg = {failDumpB, &argsP, &entCache, &failPCC};
+			failThrArg = newFTArg;
 			failThr = startThread(outputFailedResults, &failThrArg);
 		}
 	//run down the files

@@ -41,10 +41,10 @@ void sequenceReverseCompliment(uintptr_t revLen, char* toRev, double* toRevQ){
 	}
 	char compArr[256];
 	for(uintptr_t i = 0; i<256; i++){ compArr[i] = i; }
-		compArr['A'] = 'T';
-		compArr['T'] = 'A';
-		compArr['C'] = 'G';
-		compArr['G'] = 'C';
+		compArr[0x00FF & 'A'] = 'T';
+		compArr[0x00FF & 'T'] = 'A';
+		compArr[0x00FF & 'C'] = 'G';
+		compArr[0x00FF & 'G'] = 'C';
 	for(uintptr_t i = 0; i<revLen; i++){
 		toRev[i] = compArr[0x00FF & toRev[i]];
 	}

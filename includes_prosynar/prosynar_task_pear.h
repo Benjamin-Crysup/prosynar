@@ -25,9 +25,9 @@ public:
 	/**Whether to merge qualities the original way.*/
 	bool origRecipe;
 	/**Score gain for a match.*/
-	double matchPoints = 1.0;
+	double matchPoints;
 	/**Score gain for a mismatch.*/
-	double mismatchPoints = -1.0;
+	double mismatchPoints;
 	/**Do the statistical test with the observed overlap.*/
 	bool testObsOver;
 	

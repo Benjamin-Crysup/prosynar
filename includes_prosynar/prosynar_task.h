@@ -77,21 +77,21 @@ public:
 	/**Standard lock on stderr.*/
 	void* errLock;
 	/**The file to write merged sequences to.*/
-	char* seqOutFile = 0;
+	char* seqOutFile;
 	/**The sam file to write merged sequences to.*/
-	char* mergeSamOutFile = 0;
+	char* mergeSamOutFile;
 	/**The reference file.*/
-	char* refFile = 0;
+	char* refFile;
 	/**The problem region file.*/
-	char* probFile = 0;
+	char* probFile;
 	/**The cost specification file.*/
-	char* costFile = 0;
+	char* costFile;
 	/**The quality mangle file.*/
-	char* qualmFile = 0;
+	char* qualmFile;
 	/**The file to write failed sequences to.*/
-	char* failDumpFile = 0;
+	char* failDumpFile;
 	/**The number of threads to use.*/
-	intptr_t numThread = 1;
+	intptr_t numThread;
 	/**The names of the sam files to read from.*/
 	std::vector<const char*> samNames;
 	/**The filters to use.*/
