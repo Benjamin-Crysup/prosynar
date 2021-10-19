@@ -262,7 +262,8 @@ double linearReferenceSourceProbabilityAffine(LinearPairwiseSequenceAlignment* a
 }
 
 int ProblematicRegionFilter::filterPair(int threadInd, CRBSAMFileContents* read1, CRBSAMFileContents* read2, std::string* errRep){
-	intptr_t worstScore = ((intptr_t)-1) << (8*sizeof(intptr_t) - 1);
+	//NOTE: requires two's complement
+	intptr_t worstScore = -1; worstScore = worstScore << (8*sizeof(intptr_t)-1);
 	std::string* nameTmp = &(nameTmpSet[threadInd]);
 	std::vector<intptr_t>* cigVec1 = &(cigLocSet1[threadInd]);
 	std::vector<intptr_t>* cigVec2 = &(cigLocSet2[threadInd]);

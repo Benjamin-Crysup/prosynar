@@ -214,16 +214,28 @@ int main(int argc, char** argv){
 	OutStream* curOutSF = 0;
 	TabularWriter* curOutST = 0;
 	CRBSAMFileWriter* curOutS = 0;
+	//thread state (keep alive until threads dead)
+	ProsynarArgumentParser argsP;
+	ThreadsafeReusableContainerCache<CRBSAMFileContents> entCache;
+	PairedEndCache proCache;
+	ThreadProdComCollector<MergeAttemptTask> taskPCC(MAX_QUEUE_SIZE*argsP.numThread);
+	ThreadProdComCollector<MergeSequenceData> goodPCC(MAX_QUEUE_SIZE*argsP.numThread);
+	ThreadProdComCollector<CRBSAMFileContents> failPCC(MAX_QUEUE_SIZE*argsP.numThread);
+	std::vector<MergeThreadArgs> workThrArgs;
+	std::vector<void*> liveThread;
+	OutputMergeThreadArgs goodThrArg;
+	void* goodThr = 0;
+	OutputFailedThreadArgs failThrArg;
+	void* failThr = 0;
 try{
 	//parse arguments, set up
-		ProsynarArgumentParser argsP;
-			if(argsP.parseArguments(argc-1, argv+1, &std::cout) < 0){
-				std::cerr << argsP.argumentError << std::endl;
-				retCode = 1;
-				goto cleanUp;
-			}
-			if(argsP.needRun == 0){ goto cleanUp; }
-			argsP.performSetup();
+		if(argsP.parseArguments(argc-1, argv+1, &std::cout) < 0){
+			std::cerr << argsP.argumentError << std::endl;
+			retCode = 1;
+			goto cleanUp;
+		}
+		if(argsP.needRun == 0){ goto cleanUp; }
+		argsP.performSetup();
 	//open the outputs
 		if(argsP.seqOutFile){
 			openSequenceFileWrite(argsP.seqOutFile, &curOutF, &curOut);
@@ -231,27 +243,21 @@ try{
 		if(argsP.mergeSamOutFile){
 			openCRBSamFileWrite(argsP.mergeSamOutFile, &curOutSF, &curOutST, &curOutS);
 		}
-	//prepare caches and work queues
-		ThreadsafeReusableContainerCache<CRBSAMFileContents> entCache;
-		PairedEndCache proCache;
-		ThreadProdComCollector<MergeAttemptTask> taskPCC(MAX_QUEUE_SIZE*argsP.numThread);
-		ThreadProdComCollector<MergeSequenceData> goodPCC(MAX_QUEUE_SIZE*argsP.numThread);
-		ThreadProdComCollector<CRBSAMFileContents> failPCC(MAX_QUEUE_SIZE*argsP.numThread);
 	//start up the work threads
-		std::vector<MergeThreadArgs> workThrArgs; workThrArgs.resize(argsP.numThread);
-		std::vector<void*> liveThread;
+		workThrArgs.resize(argsP.numThread);
 		for(intptr_t i = 0; i<argsP.numThread; i++){
 			MergeThreadArgs newArg = {(int)i, &argsP, &taskPCC, &entCache, &failPCC, &goodPCC};
 			workThrArgs[i] = newArg;
 			liveThread.push_back(startThread(attemptMerging, &(workThrArgs[i])));
 		}
 	//start the good output thread
-		OutputMergeThreadArgs goodThrArg = {curOut, curOutS, &argsP, &goodPCC, &entCache};
-		void* goodThr = startThread(outputMergedResults, &goodThrArg);
+		{
+			OutputMergeThreadArgs makeThrArg = {curOut, curOutS, &argsP, &goodPCC, &entCache};
+			goodThrArg = makeThrArg;
+		}
+		goodThr = startThread(outputMergedResults, &goodThrArg);
 	//start the bad output thread
 		CRBSAMFileWriter* failDumpB = argsP.failDumpB;
-		OutputFailedThreadArgs failThrArg;
-		void* failThr = 0;
 		if(failDumpB){
 			OutputFailedThreadArgs newFTArg = {failDumpB, &argsP, &entCache, &failPCC};
 			failThrArg = newFTArg;
@@ -337,6 +343,12 @@ try{
 }catch(std::exception& err){
 	std::cerr << err.what() << std::endl;
 	retCode = 1;
+	taskPCC.end();
+	goodPCC.end();
+	failPCC.end();
+	for(uintptr_t i = 0; i<liveThread.size(); i++){ joinThread(liveThread[i]); }
+	if(goodThr){ joinThread(goodThr); }
+	if(failThr){ joinThread(failThr); }
 }
 	cleanUp:
 	if(curInp){ delete(curInp); }

@@ -262,7 +262,8 @@ int probabilisticROFGetAlignments(int threadInd, ProbabilisticReferenceOverlapFi
 	fillPro->clear();
 	//common values
 		uintptr_t maxCount = baseFil->uptoCount;
-		intptr_t worstScore = ((intptr_t)-1) << (8*sizeof(intptr_t) - 1);
+		//NOTE: requires two's complement
+		intptr_t worstScore = -1; worstScore = worstScore << (8*sizeof(intptr_t)-1);
 		std::greater<intptr_t> compMeth;
 	//thread local storage
 		std::string* nameTmp = &(baseFil->nameTmpSet[threadInd]);
